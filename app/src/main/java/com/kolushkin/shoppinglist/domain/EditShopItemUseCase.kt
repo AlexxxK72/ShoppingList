@@ -1,5 +1,7 @@
 package com.kolushkin.shoppinglist.domain
 
-class EditShopItemUseCase {
-    fun editShopItem(shopItem: ShopItem){}
+class EditShopItemUseCase(private val shopListRepository: ShopListRepository) {
+    fun editShopItem(shopItem: ShopItem){
+        shopListRepository.editShopItem(shopItem)
+    }
 }
