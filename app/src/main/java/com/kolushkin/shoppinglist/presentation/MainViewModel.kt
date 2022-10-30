@@ -1,16 +1,19 @@
 package com.kolushkin.shoppinglist.presentation
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.kolushkin.shoppinglist.data.ShopListRepositoryImpl
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.kolushkin.shoppinglist.data.ShopListRepositoryDbImpl
 import com.kolushkin.shoppinglist.domain.DeleteShopItemUseCase
 import com.kolushkin.shoppinglist.domain.EditShopItemUseCase
 import com.kolushkin.shoppinglist.domain.GetShopItemListUseCase
 import com.kolushkin.shoppinglist.domain.ShopItem
+import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel(application: Application): AndroidViewModel(application) {
 
-    private val repository = ShopListRepositoryImpl
+    private val repository = ShopListRepositoryDbImpl(application)
+    //private val repository = ShopListRepositoryImpl
 
     private  val getShopItemListUseCase = GetShopItemListUseCase(repository)
     private  val deleteShopItemUseCase = DeleteShopItemUseCase(repository)
@@ -20,10 +23,14 @@ class MainViewModel: ViewModel() {
 
     fun changeEnableState(shopItem: ShopItem){
         val newItem = shopItem.copy(enabled = !shopItem.enabled)
-        editShopItemUseCase.editShopItem(newItem)
+        viewModelScope.launch {
+            editShopItemUseCase.editShopItem(newItem)
+        }
     }
 
     fun deleteShopList(shopItem: ShopItem){
-        deleteShopItemUseCase.deleteShopItem(shopItem)
+        viewModelScope.launch {
+            deleteShopItemUseCase.deleteShopItem(shopItem)
+        }
     }
 }
